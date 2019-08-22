@@ -5,8 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using ModernApiDesign.ExtensionMethods;
 
 namespace ModernApiDesign
 {
@@ -18,10 +17,16 @@ namespace ModernApiDesign
         }
         
         //Uses Builder pattern to create Web Host
+        //Web host is responsible for the bootstrapping, initialization, and lifetime management of applications
+        //for a web app to run it requires 1 host with at least 1 server for serving requests & responses.
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
 
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseAwesomeServer(o => o.FolderPath = @"c:\sandbox\in")
+                .UseStartup<Startup>().Build();
 
         //public static void Main(string[] args)
         //{
