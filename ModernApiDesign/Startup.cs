@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ModernApiDesign.ExtensionMethods;
+using ModernApiDesign.Filters;
 using ModernApiDesign.HostedServices;
 using ModernApiDesign.Infrastructure;
 using ModernApiDesign.People;
@@ -36,6 +37,7 @@ namespace ModernApiDesign
             services.AddMvc(options =>
             {
                 options.ModelBinderProviders.Insert(0, new AwesomeModelBinderProvider());
+                options.Filters.Add(typeof(TimestampFilterAttribute));
             });
         }
 
