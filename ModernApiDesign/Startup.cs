@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using ModernApiDesign.ExtensionMethods;
 
@@ -21,6 +22,7 @@ namespace ModernApiDesign
         public void ConfigureServices(IServiceCollection services)
         {
             //all the application-level dependencies are registered inside the default IoC container by adding them to an IServiceCollection
+            services.AddRouting();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +57,38 @@ namespace ModernApiDesign
             app.Run(async (context) =>
             {
                 await context.Response.WriteAsync($"Welcome to the default");
+            });
+
+            app.UseRouter(builder =>
+            {
+                //builder.MapRoute(string.Empty, context =>
+                //{
+                //    return context.Response.WriteAsync($"Welcome to the default route!");
+                //});
+
+                builder.MapGet("foo/{name}/{surname?}", (request, response, routeData) =>
+                {
+                    return response.WriteAsync($"Welcome to Foo, {routeData.Values["name"]} {routeData.Values["surename"]}");
+                });
+
+                builder.MapPost("bar/{number:int}", (request, response, routeData) =>
+                {
+                    return response.WriteAsync($"Welcome to Bar, number is {routeData.Values["number"]}");
+                });
+
+                builder.MapRoute(string.Empty, context =>
+                {
+                    var routeValues = new RouteValueDictionary
+                    {
+                        { "number", 456 }
+                    };
+
+                    var vpc = new VirtualPathContext(context, null, routeValues, "bar/{number:int}");
+                    var route = builder.Routes.Single(x => x.ToString().Equals(vpc.RouteName));
+                    var barUrl = route.GetVirtualPath(vpc).VirtualPath;
+
+                    return context.Response.WriteAsync($"URL: {barUrl}");
+                });
             });
         }
 
