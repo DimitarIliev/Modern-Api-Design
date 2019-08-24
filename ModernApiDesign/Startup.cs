@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using ModernApiDesign.ExtensionMethods;
+using ModernApiDesign.HostedServices;
 
 namespace ModernApiDesign
 {
@@ -23,11 +25,12 @@ namespace ModernApiDesign
         {
             //all the application-level dependencies are registered inside the default IoC container by adding them to an IServiceCollection
             services.AddRouting();
+            services.AddSingleton<IHostedService, AwesomeHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         //required
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
         {
             //is responsible for the actual configuration of the application's HTTP request pipeline and is required by the runtime
 
