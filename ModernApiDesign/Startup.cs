@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -36,6 +37,7 @@ namespace ModernApiDesign
                 {
                     o.Conventions.Add(new AwesomeApiControllerConvention());
                 });
+
             services.AddMvc(options =>
             {
                 options.ModelBinderProviders.Insert(0, new AwesomeModelBinderProvider());
@@ -43,6 +45,10 @@ namespace ModernApiDesign
                 options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
                 options.OutputFormatters.Add(new CsvOutputFormatter());
             });
+
+            //configuration of an app that imports all MVC bits from an external assembly from a specific folder on disk
+            //var assembly = Assembly.LoadFile(@"C:\folder\mylib.dll");
+            //services.AddMvc().AddApplicationPart(assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
