@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ModernApiDesign.ExtensionMethods;
 using ModernApiDesign.Filters;
+using ModernApiDesign.Formatters;
 using ModernApiDesign.HostedServices;
 using ModernApiDesign.Infrastructure;
 using ModernApiDesign.People;
@@ -38,6 +40,8 @@ namespace ModernApiDesign
             {
                 options.ModelBinderProviders.Insert(0, new AwesomeModelBinderProvider());
                 options.Filters.Add(typeof(TimestampFilterAttribute));
+                options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+                options.OutputFormatters.Add(new CsvOutputFormatter());
             });
         }
 
