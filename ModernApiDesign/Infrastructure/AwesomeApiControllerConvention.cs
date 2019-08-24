@@ -38,7 +38,7 @@ namespace ModernApiDesign.Infrastructure
                     actionModel.Selectors.Add(new SelectorModel());
                     model.Actions.Add(actionModel);
                 }
-                application.Controllers.Add(controller);
+                application.Controllers.Add(model);
             }
         }
     }
