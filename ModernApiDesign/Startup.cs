@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using ModernApiDesign.ExtensionMethods;
 
 namespace ModernApiDesign
 {
@@ -55,5 +57,19 @@ namespace ModernApiDesign
                 await context.Response.WriteAsync($"Welcome to the default");
             });
         }
+
+        //Middleware configuration
+        //public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        //{
+        //    app.Map("/skip", (skipApp) => skipApp.Run(async (context) => await context.Response.WriteAsync($"Skip the line!")));
+        //    app.UseNumberChecker();
+        //    app.UseUpperValue();
+        //    app.UseVowelMasker();
+        //    app.Run(async (context) =>
+        //    {
+        //        var value = context.Items["value"].ToString();
+        //        await context.Response.WriteAsync($"You entered a string: {value}");
+        //    });
+        //}
     }
 }
