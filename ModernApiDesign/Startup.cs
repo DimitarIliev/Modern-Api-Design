@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ModernApiDesign.ExtensionMethods;
 using ModernApiDesign.HostedServices;
+using ModernApiDesign.Infrastructure;
+using ModernApiDesign.People;
 
 namespace ModernApiDesign
 {
@@ -26,6 +28,15 @@ namespace ModernApiDesign
             //all the application-level dependencies are registered inside the default IoC container by adding them to an IServiceCollection
             services.AddRouting();
             services.AddSingleton<IHostedService, AwesomeHostedService>();
+            services.AddSingleton<IPeopleRepository, PeopleRepository>()
+                .AddMvc((o) =>
+                {
+                    o.Conventions.Add(new AwesomeApiControllerConvention());
+                });
+            services.AddMvc(options =>
+            {
+                options.ModelBinderProviders.Insert(0, new AwesomeModelBinderProvider());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
