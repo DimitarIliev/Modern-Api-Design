@@ -34,7 +34,11 @@ namespace ModernApiDesign
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("awesomeConfig.json");
+                .AddJsonFile(config =>
+                {
+                    config.Path = "awesomeConfig.json";
+                    config.ReloadOnChange = true;
+                });
 
             Configuration = builder.Build();
         }

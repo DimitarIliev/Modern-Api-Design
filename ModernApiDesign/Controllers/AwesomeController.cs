@@ -12,7 +12,9 @@ namespace ModernApiDesign.Controllers
         private readonly AwesomeOptions awesomeOptions;
         private readonly AwesomeOptions.BazOptions bazOptions;
 
-        public AwesomeController(IOptions<AwesomeOptions> options, IOptions<AwesomeOptions.BazOptions> bazOptions)
+        //IOptions<T> doesn't reflect config change
+        //Instead we should use IOptionsSnapshot<T>
+        public AwesomeController(IOptionsSnapshot<AwesomeOptions> options, IOptionsSnapshot<AwesomeOptions.BazOptions> bazOptions)
         {
             awesomeOptions = options.Value;
             this.bazOptions = bazOptions.Value;
