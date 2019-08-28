@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ModernApiDesign.ExtensionMethods;
@@ -16,6 +17,7 @@ using ModernApiDesign.Filters;
 using ModernApiDesign.Formatters;
 using ModernApiDesign.HostedServices;
 using ModernApiDesign.Infrastructure;
+using ModernApiDesign.Models;
 using ModernApiDesign.People;
 
 namespace ModernApiDesign
@@ -27,6 +29,15 @@ namespace ModernApiDesign
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         //optional
+        public IConfigurationRoot Configuration { get; set; }
+        public Startup(Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("awesomeConfig.json");
+
+            Configuration = builder.Build();
+        }
         public void ConfigureServices(IServiceCollection services)
         {
             //all the application-level dependencies are registered inside the default IoC container by adding them to an IServiceCollection
@@ -45,7 +56,8 @@ namespace ModernApiDesign
                 options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
                 options.OutputFormatters.Add(new CsvOutputFormatter());
             });
-
+            services.Configure<AwesomeOptions>(Configuration);
+            services.Configure<AwesomeOptions.BazOptions>(Configuration.GetSection("baz"));
             //configuration of an app that imports all MVC bits from an external assembly from a specific folder on disk
             //var assembly = Assembly.LoadFile(@"C:\folder\mylib.dll");
             //services.AddMvc().AddApplicationPart(assembly);
@@ -116,6 +128,7 @@ namespace ModernApiDesign
                     return context.Response.WriteAsync($"URL: {barUrl}");
                 });
             });
+            app.UseMvc();
         }
 
         //Middleware configuration

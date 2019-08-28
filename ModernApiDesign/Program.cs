@@ -5,14 +5,64 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using ModernApiDesign.ExtensionMethods;
+using ModernApiDesign.Models;
 
 namespace ModernApiDesign
 {
     public class Program
     {
+        public static IConfigurationRoot Configuration { get; set; }
         public static void Main(string[] args)
         {
+            //var builder = new ConfigurationBuilder()
+            //    .SetBasePath(Directory.GetCurrentDirectory())
+            //    .AddJsonFile("awesomeConfig.json")
+            //    .AddJsonFile("awesomeConfig2.json");
+
+            //Configuration = builder.Build();
+
+            //foreach (var item in Configuration.AsEnumerable())
+            //{
+            //    Console.WriteLine($"Key: {item.Key}, Value: {item.Value}");
+            //}
+            //Console.ReadKey();
+
+            //load configuration from multiple sources and formats
+            //var someSettings = new Dictionary<string, string>()
+            //{
+            //    { "poco:key1", "value 1" },
+            //    { "poco:key2", "value 2" }
+            //};
+            //var builder = new ConfigurationBuilder()
+            //    .SetBasePath(Directory.GetCurrentDirectory())
+            //    .AddJsonFile("awesomeConfig.json")
+            //    .AddJsonFile("awesomeConfig2.json")
+            //    .AddXmlFile("awesomeConfig.xml")
+            //    .AddIniFile("awesomeConfig.ini")
+            //    .AddCommandLine(args)
+            //    .AddEnvironmentVariables()
+            //    .AddInMemoryCollection(someSettings)
+            //    .AddUserSecrets("awesomeSecrets");
+
+            //var config = builder.Build();
+
+            //builder.AddAzureKeyVault(config["AzureKeyVault:url"], config["AzureKeyVault:clientId"], config["AzureKeyVault:secret"]);
+
+            //Configuration = builder.Build();
+
+            //var builder = new ConfigurationBuilder()
+            //    .SetBasePath(Directory.GetCurrentDirectory())
+            //    .AddLegacyXmlConfiguration("web.config");
+
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("awesomeConfig.json");
+
+            var awesomeOptions = new AwesomeOptions();
+            builder.Build().Bind(awesomeOptions);
+
             CreateWebHostBuilder(args).Build().Run();
         }
         
