@@ -174,5 +174,11 @@ namespace ModernApiDesign
         //        await context.Response.WriteAsync($"You entered a string: {value}");
         //    });
         //}
+        //Status codes:
+        //1xx-series: used for informational purposes;
+        //2xx-series: successful responses;
+        //3xx-series: indicate some form of redirection;
+        //4xx-series: client errors;
+        //5xx-series: serer errors;
     }
 }
