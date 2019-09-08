@@ -24,6 +24,7 @@ using ModernApiDesign.Filters;
 using ModernApiDesign.Formatters;
 using ModernApiDesign.HostedServices;
 using ModernApiDesign.Infrastructure;
+using ModernApiDesign.Middleware;
 using ModernApiDesign.Models;
 using ModernApiDesign.People;
 
@@ -99,6 +100,7 @@ namespace ModernApiDesign
                 options.Filters.Add(new RequireHttpsAttribute());
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AwesomePolicy"));
             });
+            services.AddMemoryCache();
             //configuration of an app that imports all MVC bits from an external assembly from a specific folder on disk
             //var assembly = Assembly.LoadFile(@"C:\folder\mylib.dll");
             //services.AddMvc().AddApplicationPart(assembly);
@@ -185,6 +187,7 @@ namespace ModernApiDesign
                     return context.Response.WriteAsync($"URL: {barUrl}");
                 });
             });
+            app.UseMiddleware<AwesomeRateLimiterMiddleware>();
             app.UseAuthentication();
             app.UseCors("AwesomePolicy");//(config => config.WithOrigins("http://awesome.com"));
             app.UseMvc();
