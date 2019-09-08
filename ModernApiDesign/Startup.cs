@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using ModernApiDesign.ExtensionMethods;
 using ModernApiDesign.Filters;
 using ModernApiDesign.Formatters;
@@ -63,15 +66,27 @@ namespace ModernApiDesign
                     o.Conventions.Add(new AwesomeApiControllerConvention());
                 });
 
-            services.AddMvc(options =>
-            {
-                options.ModelBinderProviders.Insert(0, new AwesomeModelBinderProvider());
-                options.Filters.Add(typeof(TimestampFilterAttribute));
-                options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
-                options.OutputFormatters.Add(new CsvOutputFormatter());
-            });
+            //services.AddMvc(options =>
+            //{
+            //    options.ModelBinderProviders.Insert(0, new AwesomeModelBinderProvider());
+            //    options.Filters.Add(typeof(TimestampFilterAttribute));
+            //    options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+            //    options.OutputFormatters.Add(new CsvOutputFormatter());
+            //});
             services.Configure<AwesomeOptions>(Configuration);
             services.Configure<AwesomeOptions.BazOptions>(Configuration.GetSection("baz"));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    var serverSecret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:ServerSecret"]));
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = serverSecret,
+                        ValidIssuer = Configuration["JWT:Issuer"],
+                        ValidAudience = Configuration["JWT:Audience"]
+                    };
+                });
+            services.AddMvc();
             //configuration of an app that imports all MVC bits from an external assembly from a specific folder on disk
             //var assembly = Assembly.LoadFile(@"C:\folder\mylib.dll");
             //services.AddMvc().AddApplicationPart(assembly);
@@ -158,7 +173,8 @@ namespace ModernApiDesign
                     return context.Response.WriteAsync($"URL: {barUrl}");
                 });
             });
-            app.UseMvc();
+            app.UseAuthentication();
+            app.UseMvc();      
         }
 
         //Middleware configuration

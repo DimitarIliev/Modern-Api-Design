@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using ModernApiDesign.Models;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace ModernApiDesign.Controllers
 {
+    [Authorize]
     public class AwesomeController
     {
         private readonly AwesomeOptions awesomeOptions;
