@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using ModernApiDesign.ExtensionMethods;
 using ModernApiDesign.Filters;
 using ModernApiDesign.Formatters;
@@ -30,8 +31,17 @@ namespace ModernApiDesign
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         //optional
         public IConfigurationRoot Configuration { get; set; }
-        public Startup(Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
+        //private readonly ILoggerFactory loggerFactory;
+        private readonly ILogger logger;
+
+        public Startup(Microsoft.AspNetCore.Hosting.IHostingEnvironment env, ILogger logger) //ILoggerFactory factory)
         {
+            this.logger = logger;
+            this.logger.LogInformation(1000, "Logging from constructor!");
+            //loggerFactory = factory;
+            //var constructorLogger = loggerFactory.CreateLogger("Startup.ctor");
+            //constructorLogger.LogInformation("Logging from constructor");
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile(config =>
@@ -71,6 +81,10 @@ namespace ModernApiDesign
         //required
         public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
         {
+            logger.LogInformation(1001, "Logging from Configure!");
+            //var configureLogger = loggerFactory.CreateLogger("Startup.Configure");
+            //configureLogger.LogInformation("Logging from Configure");
+
             //is responsible for the actual configuration of the application's HTTP request pipeline and is required by the runtime
 
             //app.Use(async (context, next) =>
@@ -98,6 +112,18 @@ namespace ModernApiDesign
 
             app.Run(async (context) =>
             {
+                //We can group a set of logical operations with the same log information by using scopes, which are
+                //IDisposable objects that result from calling ILogger.BeginScope<TState> and last until they are disposed of.
+                using (logger.BeginScope("This is an awesome group"))
+                {
+                    logger.LogInformation("Log entry 1");
+                    logger.LogWarning("Log entry 2");
+                    logger.LogError("Log entry 3");
+                }
+                logger.LogInformation(1002, "Logging from app.Run!");
+                //var logger = loggerFactory.CreateLogger("Startup.Configure.Run");
+                //configureLogger.LogInformation("Logging from app.Run!");
+                //logger.LogInformation("This is awesome");
                 await context.Response.WriteAsync($"Welcome to the default");
             });
 

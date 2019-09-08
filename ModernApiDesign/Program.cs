@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using ModernApiDesign.ExtensionMethods;
 using ModernApiDesign.Models;
 
@@ -56,6 +58,41 @@ namespace ModernApiDesign
             //    .SetBasePath(Directory.GetCurrentDirectory())
             //    .AddLegacyXmlConfiguration("web.config");
 
+            //adding logger
+            new WebHostBuilder()
+                .UseKestrel()
+                .UseStartup<Startup>()
+                .ConfigureLogging(logging =>
+                {
+                    logging.AddConsole(options => options.IncludeScopes = true);
+                    //logging.SetMinimumLevel(LogLevel.Information);
+                    logging.SetMinimumLevel(LogLevel.None)
+                    .AddFilter("Default", LogLevel.Error)
+                    .AddFilter<ConsoleLoggerProvider>("Program.Startup", LogLevel.Critical);
+
+                    logging.AddFilter(s => s == LogLevel.Warning)
+                    .AddFilter<ConsoleLoggerProvider>(s => s == LogLevel.Information);
+                })
+                .Build()
+                .Run();
+            //
+            new WebHostBuilder()
+              .UseKestrel()
+              .UseStartup<Startup>()
+              .UseContentRoot(Directory.GetCurrentDirectory())
+              .ConfigureAppConfiguration((context, config) =>
+              {
+                  config.AddJsonFile("logger.config.json");
+              })
+              .ConfigureLogging((context, logging) =>
+              {
+                  var config = context.Configuration.GetSection("Logging");
+                  logging.AddConfiguration(config);
+                  logging.AddConsole();
+              })
+              .Build()
+              .Run();
+            //
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("awesomeConfig.json");

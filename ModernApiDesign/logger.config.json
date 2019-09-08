@@ -1,0 +1,13 @@
+{
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Error"
+    },
+    "Console": {
+      "LogLevel": {
+        "Program.Startup": "Critical"
+      }
+    }
+  }
+}
