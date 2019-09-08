@@ -9,7 +9,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -86,7 +89,16 @@ namespace ModernApiDesign
                         ValidAudience = Configuration["JWT:Audience"]
                     };
                 });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AwesomePolicy", builder => builder.WithOrigins("https://awesome.com"));
+            });
             services.AddMvc();
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new RequireHttpsAttribute());
+                options.Filters.Add(new CorsAuthorizationFilterFactory("AwesomePolicy"));
+            });
             //configuration of an app that imports all MVC bits from an external assembly from a specific folder on disk
             //var assembly = Assembly.LoadFile(@"C:\folder\mylib.dll");
             //services.AddMvc().AddApplicationPart(assembly);
@@ -117,7 +129,7 @@ namespace ModernApiDesign
             //    else
             //        await next();
             //});
-
+            
             app.Map("/foo", config => config.Use(async (context, next) => await context.Response.WriteAsync("Welcome to /foo")));
 
             app.MapWhen(context =>
@@ -174,7 +186,10 @@ namespace ModernApiDesign
                 });
             });
             app.UseAuthentication();
-            app.UseMvc();      
+            app.UseCors("AwesomePolicy");//(config => config.WithOrigins("http://awesome.com"));
+            app.UseMvc();
+            var options = new RewriteOptions().AddRedirectToHttps();
+            app.UseRewriter(options);
         }
 
         //Middleware configuration

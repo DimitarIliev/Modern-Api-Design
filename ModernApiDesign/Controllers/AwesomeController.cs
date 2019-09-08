@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.Extensions.Options;
 using ModernApiDesign.Models;
 using System;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 namespace ModernApiDesign.Controllers
 {
     [Authorize]
+    [EnableCors("AwesomePolicy")]
     public class AwesomeController
     {
         private readonly AwesomeOptions awesomeOptions;
@@ -21,5 +23,11 @@ namespace ModernApiDesign.Controllers
             awesomeOptions = options.Value;
             this.bazOptions = bazOptions.Value;
         }
+
+        [EnableCors("AnotherAwesomePolicy")]
+        public IEnumerable<string> Get() => new List<string>();
+
+        [DisableCors]
+        public string Post() => "";
     }
 }
