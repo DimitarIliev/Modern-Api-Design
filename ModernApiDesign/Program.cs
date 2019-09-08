@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using ModernApiDesign.ExtensionMethods;
@@ -57,7 +61,35 @@ namespace ModernApiDesign
             //var builder = new ConfigurationBuilder()
             //    .SetBasePath(Directory.GetCurrentDirectory())
             //    .AddLegacyXmlConfiguration("web.config");
+            //add data protection
+            var services = new ServiceCollection()
+                .AddDataProtection()
+                .Services.BuildServiceProvider();
 
+            var protectedProvider = services.GetService<IDataProtectionProvider>();
+            var protector = protectedProvider.CreateProtector("AwesomePurpose")
+                .ToTimeLimitedDataProtector();
+
+            DateTimeOffset expiryDate;
+            try
+            {
+                Console.Write($"Type something sensitive: ");
+                var input = Console.ReadLine();
+                var protectedInput = protector.Protect(input, TimeSpan.FromSeconds(10));
+                Console.WriteLine($"Protected: {protectedInput}");
+                var unprotectedInput = protector.Unprotect(protectedInput, out expiryDate);
+                Console.WriteLine($"Unprotected: {unprotectedInput}");
+                Console.WriteLine();
+            }
+            catch (CryptographicException exception)
+            {
+                Console.WriteLine(exception.Message);
+            }
+            finally
+            {
+                Thread.Sleep(1000);
+            }
+            //
             //adding logger
             new WebHostBuilder()
                 .UseKestrel()
@@ -102,7 +134,7 @@ namespace ModernApiDesign
 
             CreateWebHostBuilder(args).Build().Run();
         }
-        
+
         //Uses Builder pattern to create Web Host
         //Web host is responsible for the bootstrapping, initialization, and lifetime management of applications
         //for a web app to run it requires 1 host with at least 1 server for serving requests & responses.
