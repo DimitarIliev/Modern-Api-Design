@@ -102,6 +102,9 @@ namespace ModernApiDesign
                 //options.ApiVersionReader = new HeaderApiVersionReader("x-api-version");    
                 //version to be specified as part of the content type in the header
                 //options.ApiVersionReader = new MediaTypeApiVersionReader();
+                options.DefaultApiVersion = new ApiVersion(1,0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
                 options.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader(), new HeaderApiVersionReader()
                 {
                     HeaderNames = { "api-version" }
