@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -95,6 +96,17 @@ namespace ModernApiDesign
                 options.AddPolicy("AwesomePolicy", builder => builder.WithOrigins("https://awesome.com"));
             });
             services.AddMvc();
+            services.AddApiVersioning(options =>
+            {
+                //enable request header versioning
+                //options.ApiVersionReader = new HeaderApiVersionReader("x-api-version");    
+                //version to be specified as part of the content type in the header
+                //options.ApiVersionReader = new MediaTypeApiVersionReader();
+                options.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader(), new HeaderApiVersionReader()
+                {
+                    HeaderNames = { "api-version" }
+                });
+            });
             services.Configure<MvcOptions>(options =>
             {
                 options.Filters.Add(new RequireHttpsAttribute());
