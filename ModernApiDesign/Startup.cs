@@ -207,6 +207,7 @@ namespace ModernApiDesign
                 });
             });
             app.UseMiddleware<AwesomeRateLimiterMiddleware>();
+            app.UseMiddleware<AwesomeGraphQLMiddleware>();
             app.UseAuthentication();
             app.UseCors("AwesomePolicy");//(config => config.WithOrigins("http://awesome.com"));
             app.UseSwagger();
