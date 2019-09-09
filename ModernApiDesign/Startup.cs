@@ -96,6 +96,10 @@ namespace ModernApiDesign
                 options.AddPolicy("AwesomePolicy", builder => builder.WithOrigins("https://awesome.com"));
             });
             services.AddMvc();
+            services.AddSwaggerGen(x =>
+            {
+                x.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "Awesome API", Version = "v1" });
+            });
             services.AddApiVersioning(options =>
             {
                 //enable request header versioning
@@ -205,6 +209,11 @@ namespace ModernApiDesign
             app.UseMiddleware<AwesomeRateLimiterMiddleware>();
             app.UseAuthentication();
             app.UseCors("AwesomePolicy");//(config => config.WithOrigins("http://awesome.com"));
+            app.UseSwagger();
+            app.UseSwaggerUI(x =>
+            {
+                x.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
             app.UseMvc();
             var options = new RewriteOptions().AddRedirectToHttps();
             app.UseRewriter(options);
